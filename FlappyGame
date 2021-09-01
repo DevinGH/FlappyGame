@@ -1,0 +1,133 @@
+package java_2;
+
+import acm.graphics.*;
+import acm.program.*;
+import acm.util.*;
+import java.awt.Color;
+import java.awt.event.KeyEvent;
+import java.util.*;
+
+public class proto_game extends GraphicsProgram{
+	public static final int WINDOW_HEIGHT = 800;
+	public static final int WINDOW_WIDTH = 800;
+	public static final int REFRESH = 50;
+	public static String direction = "false";
+	
+	public static String hitDetect = "false";
+	
+	public static int points = 0;
+	
+	public static int duration = 0;
+	
+	public static int chal_height = 200;
+	
+	public void run() {
+		setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+		addKeyListeners();
+		int lives = 5;
+		while(lives > 0) {
+			game(100, 400);
+			GRect GO = new GRect(0,0, 800, 800);
+			GO.setFilled(true);
+			GO.setFillColor(Color.WHITE);
+			add(GO);
+			if(hitDetect.equals("true")) {
+				lives -= 1;
+				System.out.println("Lives: "+ lives);
+			}
+			/*if(duration > 0) {
+				chal_height -= 10;
+			}*/
+
+		}
+		System.out.println("Game Over");
+		System.out.println("Total Points: " + points);
+	
+	}
+	
+	public void game(int min, int max) {
+		Random height_var = new Random(); 
+		int height = height_var.nextInt(751);
+		
+		GRect player = new GRect(30, 30);
+		
+		player.setLocation(100, 300);
+		
+		GRect top = new GRect(800, 0, 50, height);
+		top.setFilled(true);
+		top.setFillColor(Color.BLACK);
+		
+		GRect bot = new GRect(800, (height + chal_height), 50, (800 - (height + 100)));
+		bot.setFilled(true);
+		bot.setFillColor(Color.BLACK);
+		
+		
+		add(player);
+		add(top);
+		add(bot);
+		
+		while(true) {
+			hitDetect = "false";
+			height = height_var.nextInt(751);
+			
+			top.setLocation(top.getLocation().getX() - 10, top.getLocation().getY());
+			bot.setLocation(bot.getLocation().getX() - 10, bot.getLocation().getY());
+			
+			if(top.getLocation().getX() < 0) {
+			  top.setSize(50, height);
+			  top.setLocation(800 , top.getLocation().getY());
+				
+			}
+			
+			if(bot.getLocation().getX() < 0) {
+				bot.setSize(50, (800 - (height + chal_height)));
+				bot.setLocation(800, (height + chal_height));
+			}
+			
+			if(direction.equals("up")) {
+				player.setLocation(player.getLocation().getX(), player.getLocation().getY() - 10);
+			}
+			
+			if(direction.equals("down")) {
+				player.setLocation(player.getLocation().getX(), player.getLocation().getY() + 10);
+			}
+			
+			if(player.getBounds().intersects(top.getBounds()) || player.getBounds().intersects(bot.getBounds())) {
+				System.out.println("hit");
+				hitDetect = "true";
+				break;
+			}
+			else if (player.getLocation().getX() ==  top.getLocation().getX()){
+				System.out.println("congrats");
+				points += 1;
+				duration += 1;
+				System.out.println("Points: " + points);
+			}
+			
+			/*if(duration > 0 && chal_height > 100) {
+				
+			}*/
+			
+			pause(REFRESH);
+		}
+	}
+	
+	public void keyPressed(KeyEvent e) {
+		switch (e.getKeyCode()) {
+		case KeyEvent.VK_SPACE:
+			//System.out.println("up");
+			direction = "up"; break;
+			
+		}
+	}
+	
+	public void keyReleased(KeyEvent e) {
+		switch (e.getKeyCode()) {
+		case KeyEvent.VK_SPACE:
+			//System.out.println("down");
+			direction = "down"; break;
+		}
+	}
+	
+
+}
